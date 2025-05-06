@@ -27,9 +27,9 @@ import {
 import { BrowserRouter as Router, Link, Route, Routes } from 'react-router-dom';
 
 import Projects from '../Projects/ProjectList';
-import TaskCard from '../Tasks/Taskdnd';
 import Create from '../Projects/ProjectForm'; 
 import View from '../Projects/ProjectDetails'; 
+import TaskCard from '../Tasks/Taskdnd';
 import '../../App.css';
 
 function HomePage() {
@@ -213,10 +213,10 @@ const App_Shell = () => {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/projects" element={<Projects />} />
-            <Route path="/tasks" element={<TaskCard dark={dark} theme={theme} />} />
-            <Route path="/help" element={<HelpCenter />} />
             <Route path="/ProjectForm" element={<Create />} />
             <Route path="/projectdetails/:projectId" element={<View />} />
+            <Route path="/tasks" element={<TaskCard dark={dark} theme={theme} />} />
+            <Route path="/help" element={<HelpCenter />} />
           </Routes>
         </AppShell.Main>
       </AppShell>
