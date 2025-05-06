@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { MantineReactTable, type MRT_ColumnDef } from "mantine-react-table";
+import '@mantine/core/styles.css';
+import '@mantine/dates/styles.css'; //if using mantine date picker features
+import 'mantine-react-table/styles.css'; //make sure MRT styles were imported in your app root (once)
+import { useMemo } from 'react';
+import {
+  MantineReactTable,
+  useMantineReactTable,
+  type MRT_ColumnDef,
+} from 'mantine-react-table';
 import {
   Box,
   TextInput,
@@ -10,28 +18,57 @@ import {
   Button,
   Flex
 } from "@mantine/core";
-import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
+import { IconChevronLeft, IconChevronRight, IconSearch } from "@tabler/icons-react";
 import { useProjectStore } from "../../store/ProjectStore";
 import { useNavigate } from "react-router-dom";
 
 const PAGE_SIZE = 5;
 
-const columns: MRT_ColumnDef<Project>[] = [
-  { accessorKey: "name", header: "Name", size: 200 },
-  { accessorKey: "status", header: "Status", size: 150 },
-  { accessorKey: "progress", header: "Progress", size: 150 },
-  { accessorKey: "deadline", header: "Deadline", size: 150 },
-];
-
 const ProjectList = () => {
+  const columns = useMemo<MRT_ColumnDef<Person>[]>(
+    () => [
+      {
+        accessorKey: 'name',
+        header: 'Name',
+      },
+      {
+        accessorKey: 'status',
+        header: 'Status',
+      },
+      {
+        accessorKey: 'progress',
+        header: 'Progress',
+      },
+      {
+        accessorKey: 'deadline',
+        header: 'Deadline',
+      },
+    ],
+    [],
+  );
+
+ //const ProjectList = () => {
   const { projects, initialize } = useProjectStore();
   const [globalFilter, setGlobalFilter] = useState("");
   const [page, setPage] = useState(1);
   const navigate = useNavigate();
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     initialize();
   }, [initialize]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    window.addEventListener("resize", handleResize);
+    handleResize();
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   const filteredProjects = projects.filter((project) =>
     Object.values(project).some((value) =>
@@ -64,8 +101,13 @@ const ProjectList = () => {
 
   return (
     <div>
-      <Flex justify="space-between">
-        <Box mt="xl" mb="md">
+      <Flex
+        direction={isMobile ? "column-reverse" : "row"}
+        justify="space-between"
+        align={isMobile ? "flex-start" : "center"}
+        gap={isMobile ? "sm" : "md"}
+      >
+        <Box mt="xl" mb="md" style={{ flex: 1, width: "100%" }}>
           <TextInput
             placeholder="Search projects..."
             value={globalFilter}
@@ -73,10 +115,19 @@ const ProjectList = () => {
               setGlobalFilter(e.currentTarget.value);
               setPage(1);
             }}
-            style={{ width: 300 }}
+            style={{
+              width: "100%",
+              maxWidth: "500px",
+            }}
+            leftSection={<IconSearch size={16} />}
+            leftSectionWidth={40}
           />
         </Box>
-        <Button onClick={handleCreateButtonClick} mt="md">
+        <Button
+          onClick={handleCreateButtonClick}
+          mt={isMobile ? "sm" : "md"}
+          style={{ minWidth: isMobile ? "100%" : "auto" }}
+        >
           Create New Project
         </Button>
       </Flex>
@@ -90,10 +141,14 @@ const ProjectList = () => {
           enableBottomToolbar={false}
           enableTopToolbar={false}
           enableRowSelection={false}
+          layoutMode="grid" 
           mantineTableProps={{
             striped: true,
             withBorder: true,
-            withColumnBorders: true,
+            withColumnBorders: false,
+          }}
+          mantineTableContainerProps={{
+            style: { overflowX: "auto" }, 
           }}
           mantineTableBodyRowProps={({ row }) => ({
             style: { cursor: "pointer" },
@@ -105,6 +160,7 @@ const ProjectList = () => {
             },
           })}
         />
+
       </Box>
 
       <Group justify="space-between" align="center" mt="md" px="sm" wrap="wrap" gap="sm">
@@ -145,5 +201,6 @@ const ProjectList = () => {
     </div>
   );
 };
+
 
 export default ProjectList;

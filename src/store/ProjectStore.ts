@@ -17,7 +17,8 @@ type ProjectStore = {
   updateProject: (updatedProject: Project) => void;
   setSelectedProject: (project: Project | null) => void;
   initialize: () => void;
-  getNextId: () => number; 
+  getNextId: () => number;
+  deleteProject: (projectId: number) => void; 
 };
 
 const initialData: Project[] = [
@@ -50,16 +51,19 @@ export const useProjectStore = create<ProjectStore>()(
           ),
         })),
       setSelectedProject: (project) => set({ selectedProject: project }),
-      
       getNextId: () => {
         const projects = get().projects;
         return projects.length > 0
           ? Math.max(...projects.map((p) => p.id)) + 1
           : 1;
       },
+      deleteProject: (projectId) =>
+        set((state) => ({
+          projects: state.projects.filter((project) => project.id !== projectId),
+        })),
     }),
     {
-      name: "project-storage",
+      name: "project-storage", 
     }
   )
 );
