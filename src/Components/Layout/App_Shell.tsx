@@ -216,7 +216,7 @@ const App_Shell = () => {
             <Route path="/tasks" element={<TaskCard dark={dark} theme={theme} />} />
             <Route path="/help" element={<HelpCenter />} />
             <Route path="/ProjectForm" element={<Create />} />
-            <Route path="/ProjectDetails/:name" element={<View />} />
+            <Route path="/projectdetails/:projectId" element={<View />} />
           </Routes>
         </AppShell.Main>
       </AppShell>

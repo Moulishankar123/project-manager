@@ -12,7 +12,7 @@ import {
 } from "@mantine/core";
 import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
 import { useProjectStore } from "../../store/ProjectStore";
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom";
 
 const PAGE_SIZE = 5;
 
@@ -20,14 +20,14 @@ const columns: MRT_ColumnDef<Project>[] = [
   { accessorKey: "name", header: "Name", size: 200 },
   { accessorKey: "status", header: "Status", size: 150 },
   { accessorKey: "progress", header: "Progress", size: 150 },
-  { accessorKey: "date", header: "Date", size: 150 },
+  { accessorKey: "deadline", header: "Deadline", size: 150 },
 ];
 
 const ProjectList = () => {
   const { projects, initialize } = useProjectStore();
   const [globalFilter, setGlobalFilter] = useState("");
   const [page, setPage] = useState(1);
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   useEffect(() => {
     initialize();
@@ -53,27 +53,34 @@ const ProjectList = () => {
   const paginatedProjects = filteredProjects.slice(startIdx, endIdx);
 
   const handleCreateButtonClick = () => {
-    navigate('/ProjectForm'); 
+    navigate('/ProjectForm');
+  };
+
+  const handleRowClick = (projectId: string) => {
+    if (projectId) {
+      navigate(`/projectdetails/${projectId}`);
+    }
   };
 
   return (
     <div>
       <Flex justify="space-between">
-      <Box mt="xl" mb="md">
-        <TextInput
-          placeholder="Search projects..."
-          value={globalFilter}
-          onChange={(e) => {
-            setGlobalFilter(e.currentTarget.value);
-            setPage(1);
-          }}
-          style={{ width: 300 }}
-        />
-      </Box>
-      <Button onClick={handleCreateButtonClick} mt="md">
-        Create New Project
-      </Button>
+        <Box mt="xl" mb="md">
+          <TextInput
+            placeholder="Search projects..."
+            value={globalFilter}
+            onChange={(e) => {
+              setGlobalFilter(e.currentTarget.value);
+              setPage(1);
+            }}
+            style={{ width: 300 }}
+          />
+        </Box>
+        <Button onClick={handleCreateButtonClick} mt="md">
+          Create New Project
+        </Button>
       </Flex>
+
       <Box mt="md">
         <MantineReactTable
           columns={columns}
@@ -88,7 +95,15 @@ const ProjectList = () => {
             withBorder: true,
             withColumnBorders: true,
           }}
-          mantineTableBodyRowProps={{ style: { cursor: "pointer" } }}
+          mantineTableBodyRowProps={({ row }) => ({
+            style: { cursor: "pointer" },
+            onClick: () => {
+              const projectId = row.original.id;
+              if (projectId) {
+                handleRowClick(projectId);
+              }
+            },
+          })}
         />
       </Box>
 
@@ -127,8 +142,6 @@ const ProjectList = () => {
           </ActionIcon>
         </Group>
       </Group>
-
-      
     </div>
   );
 };

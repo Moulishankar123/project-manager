@@ -1,119 +1,175 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button, Grid, GridCol, Input } from "@mantine/core";
-import { DateInput } from '@mantine/dates';
+import {
+  Box,
+  Button,
+  Grid,
+  GridCol,
+  Input,
+  Textarea,
+  Container,
+  Stack,
+} from "@mantine/core";
+import { DateInput } from "@mantine/dates";
 import { useProjectStore } from "../../store/ProjectStore";
-import { useNavigate } from "react-router-dom";  
+import { useNavigate } from "react-router-dom";
 
 export type ProjectFormData = {
+  id: number;
   name: string;
   status: string;
+  description: string;
   progress: string;
-  date: string;
+  deadline: string;
 };
 
 const ProjectForm = () => {
-  const { selectedProject, addProject, updateProject, setSelectedProject } = useProjectStore();
-  const [formData, setFormData] = useState<ProjectFormData>({ 
-    name: '', 
-    status: '', 
-    progress: '', 
-    date: '' 
+  const {
+    selectedProject,
+    addProject,
+    updateProject,
+    setSelectedProject,
+    getNextId,
+  } = useProjectStore();
+
+  const [formData, setFormData] = useState<ProjectFormData>({
+    id: 0,
+    name: "",
+    status: "",
+    description: "",
+    progress: "",
+    deadline: "",
   });
-  
-  const navigate = useNavigate();  
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (selectedProject) {
       setFormData(selectedProject);
+    } else {
+      setFormData({
+        id: getNextId(),
+        name: "",
+        status: "",
+        description: "",
+        progress: "",
+        deadline: "",
+      });
     }
-  }, [selectedProject]);
+  }, [selectedProject, getNextId]);
 
-  const handleChange = (field: keyof ProjectFormData) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({ ...prev, [field]: e.target.value }));
+  const handleChange = (field: keyof ProjectFormData) => (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setFormData((prev) => ({ ...prev, [field]: e.target.value }));
   };
 
   const handleDateChange = (value: Date | null) => {
     if (value) {
-      const formattedDate = value.toISOString().split('T')[0];
-      setFormData(prev => ({ ...prev, date: formattedDate }));
+      const formattedDate = value.toISOString().split("T")[0];
+      setFormData((prev) => ({ ...prev, deadline: formattedDate }));
     }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
     if (selectedProject) {
       updateProject(formData);
     } else {
       addProject(formData);
     }
-    setFormData({ name: '', status: '', progress: '', date: '' });
+
+    setFormData({
+      id: getNextId(),
+      name: "",
+      status: "",
+      description: "",
+      progress: "",
+      deadline: "",
+    });
     setSelectedProject(null);
-    
-    navigate(-1);  
+    navigate(-1);
   };
 
   return (
-    <Box p={16} component="form" onSubmit={handleSubmit}>
-      <Grid gutter={"xl"}>
-        <GridCol span={4}>
-          <Input.Wrapper label="Name">
-            <Input 
-              placeholder="Enter the name" 
-              value={formData.name}
-              onChange={handleChange('name')}
+    <Container size="lg" p="md">
+      <Box component="form" onSubmit={handleSubmit}>
+        <Grid gutter="lg">
+          <GridCol span={{ base: 12, md: 6, lg: 4 }}>
+            <Input.Wrapper label="Name" required>
+              <Input
+                placeholder="Enter the project name"
+                value={formData.name}
+                onChange={handleChange("name")}
+              />
+            </Input.Wrapper>
+          </GridCol>
+          <GridCol span={{ base: 12, md: 6, lg: 4 }}>
+            <Input.Wrapper label="Status" required>
+              <Input
+                placeholder="Status of the project"
+                value={formData.status}
+                onChange={handleChange("status")}
+              />
+            </Input.Wrapper>
+          </GridCol>
+          <GridCol span={{ base: 12, md: 6, lg: 4 }}>
+            <Input.Wrapper label="Progress" required>
+              <Input
+                placeholder="Enter the current progress"
+                value={formData.progress}
+                onChange={handleChange("progress")}
+              />
+            </Input.Wrapper>
+          </GridCol>
+          <GridCol span={{ base: 12, md: 6 }}>
+            <Input.Wrapper label="Description" required>
+              <Textarea
+                placeholder="Enter project description"
+                value={formData.description}
+                onChange={handleChange("description")}
+              />
+            </Input.Wrapper>
+          </GridCol>
+          <GridCol span={{ base: 12, md: 6 }}>
+            <DateInput
+              label="Deadline"
+              placeholder="Select deadline"
+              valueFormat="YYYY-MM-DD"
+              value={formData.deadline ? new Date(formData.deadline) : null}
+              onChange={handleDateChange}
               required
+              fullWidth
             />
-          </Input.Wrapper>
-        </GridCol>
-        <GridCol span={4}>
-          <Input.Wrapper label="Status">
-            <Input 
-              placeholder="Status of the project" 
-              value={formData.status}
-              onChange={handleChange('status')}
-              required
-            />
-          </Input.Wrapper>
-        </GridCol>
-        <GridCol span={4}>
-          <Input.Wrapper label="Progress">
-            <Input 
-              placeholder="Enter the current progress" 
-              value={formData.progress}
-              onChange={handleChange('progress')}
-              required
-            />
-          </Input.Wrapper>
-        </GridCol>
-        <GridCol span={4}>
-          <DateInput
-            value={formData.date ? new Date(formData.date) : null}
-            onChange={handleDateChange}
-            label="Date"
-            placeholder="Select date"
-            valueFormat="YYYY-MM-DD"
-            required
-          />
-        </GridCol>
-        <GridCol span={12}>
-          <Button type="submit" mt="md">
-            {selectedProject ? "Update Project" : "Add Project"}
-          </Button>
-          {selectedProject && (
-            <Button 
-              variant="outline" 
-              ml="sm" 
-              onClick={() => {
-                setSelectedProject(null);
-                setFormData({ name: '', status: '', progress: '', date: '' });
-              }}
-            >
-              Cancel
-            </Button>
-          )}
-        </GridCol>
-      </Grid>
-    </Box>
+          </GridCol>
+          <GridCol span={12}>
+            <Stack align="start" gap="sm" mt="md">
+              <Button type="submit">
+                {selectedProject ? "Update Project" : "Add Project"}
+              </Button>
+              {selectedProject && (
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setSelectedProject(null);
+                    setFormData({
+                      id: getNextId(),
+                      name: "",
+                      status: "",
+                      description: "",
+                      progress: "",
+                      deadline: "",
+                    });
+                  }}
+                >
+                  Cancel
+                </Button>
+              )}
+            </Stack>
+          </GridCol>
+        </Grid>
+      </Box>
+    </Container>
   );
 };
 

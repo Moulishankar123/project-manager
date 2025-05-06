@@ -2,10 +2,12 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 type Project = {
+  id: number;
   name: string;
+  description: string;
   status: string;
-  progress: string;
-  date: string;
+  progress: number;
+  deadline: string;
 };
 
 type ProjectStore = {
@@ -15,11 +17,18 @@ type ProjectStore = {
   updateProject: (updatedProject: Project) => void;
   setSelectedProject: (project: Project | null) => void;
   initialize: () => void;
+  getNextId: () => number; 
 };
 
 const initialData: Project[] = [
-  { name: "Project A", status: "In Progress", progress: "40%", date: "2025-05-05" },
-  { name: "Project B", status: "Completed", progress: "100%", date: "2025-04-28" },
+  {
+    id: 1,
+    name: "Website Redesign",
+    description: "Complete overhaul of company website",
+    status: "In Progress",
+    progress: 65,
+    deadline: "2023-06-30",
+  }
 ];
 
 export const useProjectStore = create<ProjectStore>()(
@@ -32,15 +41,22 @@ export const useProjectStore = create<ProjectStore>()(
           set({ projects: initialData });
         }
       },
-      addProject: (project) => 
+      addProject: (project) =>
         set((state) => ({ projects: [...state.projects, project] })),
       updateProject: (updatedProject) =>
         set((state) => ({
-          projects: state.projects.map(project =>
-            project.name === updatedProject.name ? updatedProject : project
-          )
+          projects: state.projects.map((project) =>
+            project.id === updatedProject.id ? updatedProject : project
+          ),
         })),
       setSelectedProject: (project) => set({ selectedProject: project }),
+      
+      getNextId: () => {
+        const projects = get().projects;
+        return projects.length > 0
+          ? Math.max(...projects.map((p) => p.id)) + 1
+          : 1;
+      },
     }),
     {
       name: "project-storage",
