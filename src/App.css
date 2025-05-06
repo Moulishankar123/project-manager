@@ -1,0 +1,13 @@
+.animated-text {
+    background: linear-gradient(90deg, #00f, #0ff, #0f0, #ff0, #f00, #f0f, #00f);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 5s infinite linear;
+  }
+  
+  @keyframes shimmer {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
+  }
+  
