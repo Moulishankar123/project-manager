@@ -8,6 +8,7 @@ import {
   Textarea,
   Container,
   Stack,
+  Flex,
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { useProjectStore } from "../../store/ProjectStore";
@@ -142,30 +143,15 @@ const ProjectForm = () => {
               fullWidth
             />
           </GridCol>
-          <GridCol span={12}>
-            <Stack align="start" gap="sm" mt="md">
-              <Button type="submit">
-                {selectedProject ? "Update Project" : "Add Project"}
+          <GridCol>
+            <Flex justify={"space-between"} className="lg:mt={200}" mt={50}>
+              <Button onClick={()=>navigate(-1)}>
+                Back
               </Button>
-              {selectedProject && (
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setSelectedProject(null);
-                    setFormData({
-                      id: getNextId(),
-                      name: "",
-                      status: "",
-                      description: "",
-                      progress: "",
-                      deadline: "",
-                    });
-                  }}
-                >
-                  Cancel
-                </Button>
-              )}
-            </Stack>
+               <Button type="submit">
+                Add Project
+              </Button>
+              </Flex>
           </GridCol>
         </Grid>
       </Box>

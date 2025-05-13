@@ -14,6 +14,7 @@ import {
   Group,
   SimpleGrid,
   useMantineTheme,
+  Flex,
 } from '@mantine/core';
 import { useMediaQuery} from '@mantine/hooks';
 import { useMantineColorScheme } from '@mantine/core';
@@ -164,9 +165,11 @@ export default function TaskCard() {
 
   return (
     <>
-      <Button mb="md" onClick={openCreateModal}>
+      <Flex>
+      <Button mb="md" onClick={openCreateModal} ml="auto">
         Add Task
       </Button>
+      </Flex>
 
       <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SimpleGrid cols={isSmallScreen ? 1 : isMediumScreen ? 2 : 3} spacing="md">

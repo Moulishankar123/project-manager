@@ -47,7 +47,6 @@ const ProjectList = () => {
     [],
   );
 
- //const ProjectList = () => {
   const { projects, initialize } = useProjectStore();
   const [globalFilter, setGlobalFilter] = useState("");
   const [page, setPage] = useState(1);

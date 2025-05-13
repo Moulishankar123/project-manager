@@ -18,7 +18,7 @@ type ProjectStore = {
   setSelectedProject: (project: Project | null) => void;
   initialize: () => void;
   getNextId: () => number;
-  deleteProject: (projectId: number) => void; 
+  deleteProject: (projectId: number) => void;
 };
 
 const initialData: Project[] = [
@@ -63,7 +63,7 @@ export const useProjectStore = create<ProjectStore>()(
         })),
     }),
     {
-      name: "project-storage", 
+      name: "project-storage",
     }
   )
 );

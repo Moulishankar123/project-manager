@@ -190,7 +190,7 @@ const App_Shell = () => {
                 <Avatar radius="xl">R</Avatar>
                 <Box>
                   <Text size="sm" fw={500} c={dark ? 'gray.3' : 'dark'}>
-                    Riyaz
+                    Mouli
                   </Text>
                   <Text size="xs" c={dark ? 'gray.5' : 'dimmed'}>
                     +201094828532
